@@ -135,9 +135,15 @@ pub fn deserialize_json(json_string: &str) -> Result<Map<String, Value>> {
         Err(_) => return Err(ErrorKind::BadParse.into()),
     };
 
-    match data.as_object() {
-        Some(value) => Ok(value.clone()),
-        None => Err(ErrorKind::BadParse.into()),
+    if data.is_array() {
+        let mut map = Map::new();
+        map.insert("data".to_string(), data);
+        Ok(map)
+    } else {
+        match data.as_object() {
+            Some(value) => Ok(value.clone()),
+            None => Err(ErrorKind::BadParse.into()),
+        }
     }
 }
 

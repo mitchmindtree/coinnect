@@ -383,6 +383,12 @@ impl PoloniexApi {
         self.private_query("returnOpenOrders", &params)
     }
 
+    pub fn return_order_status(&mut self, order_number: &str) -> Result<Map<String, Value>> {
+        let mut params = HashMap::new();
+        params.insert("orderNumber", order_number);
+        self.private_query("returnOrderStatus", &params)
+    }
+
     /// Returns your trade history for a given market, specified by the "currencyPair" POST
     /// parameter.
     /// You may specify "all" as the currencyPair to receive your trade history for all markets.
@@ -519,11 +525,14 @@ impl PoloniexApi {
     /// ```json
     /// {"response":"Withdrew 2398 NXT."}
     /// ```
-    pub fn withdraw(&mut self, currency: &str, amount: &str, address: &str) -> Result<Map<String, Value>> {
+    pub fn withdraw(&mut self, currency: &str, amount: &str, address: &str, paymentId: Option<&str>) -> Result<Map<String, Value>> {
         let mut params = HashMap::new();
         params.insert("currency", currency);
         params.insert("amount", amount);
         params.insert("address", address);
+        if paymentId.is_some() {
+            params.insert("paymentId", paymentId.unwrap());
+        }
         self.private_query("withdraw", &params)
     }
 
@@ -537,7 +546,7 @@ impl PoloniexApi {
     /// {"makerFee": "0.00140000", "takerFee": "0.00240000", "thirtyDayVolume": "612.00248891",
     /// "nextTier": "1200.00000000"}
     /// ```
-    pub fn return_free_info(&mut self) -> Result<Map<String, Value>> {
+    pub fn return_fee_info(&mut self) -> Result<Map<String, Value>> {
         let params = HashMap::new();
         self.private_query("returnFeeInfo", &params)
     }
